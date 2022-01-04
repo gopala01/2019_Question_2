@@ -5,10 +5,24 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        final int MAX_PATIENTS = 5;
-        Patient[] pArray = new Patient[MAX_PATIENTS];
-        inputSurnames(pArray, MAX_PATIENTS);
+        final int MAX_PATIENTS = 300;
+        String[] namesArray = new String[MAX_PATIENTS];
+        inputNamesArray1(namesArray, MAX_PATIENTS);
 
+        int arrayLength = 0;
+        arrayLength = createArrayLength(arrayLength, namesArray);
+
+
+        Patient[] patientArray = new Patient[arrayLength];
+
+        inputNamesArray2(patientArray, namesArray);
+
+        choicesForUser(patientArray);
+
+    }
+
+    public static void choicesForUser(Patient[] patientArray)
+    {
         int choice = inputInt("What is your choice\n1. Exit\n2. Input further details\n3. Print details");
         choice = checkChoice(choice);
 
@@ -16,22 +30,98 @@ public class Main {
         {
             if (choice == 2)
             {
-                String name = inputString("What is the patient?");
-                choice2(pArray, name);
+                String name = inputString("Who is the patient?");
+                choice2(patientArray, name);
+            }
+            else if(choice == 3)
+            {
+                choice3(patientArray);
+            }
+            choice = inputInt("What is your choice\n1. Exit\n2. Input further details\n3. Print details");
+            choice = checkChoice(choice);
+        }
+        print("Goodbye");
+    }
+    public static void inputNamesArray2(Patient[] pArray, String[] namesArray)
+    {
+        for (int i = 0; i < pArray.length; i++) {
+            pArray[i] = createPatient();
+            pArray[i].name = namesArray[i];
+        }
+    }
+
+    public static int createArrayLength(int arrayLength, String[] array)
+    {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] != null)
+            {
+                arrayLength = arrayLength + 1;
             }
         }
 
+        return arrayLength;
     }
+    public static void choice3(Patient[] pArray)
+    {
+        for (int i = 0; i < pArray.length; i++) {
+            print(getName(pArray[i]));
+            if (getRegime(pArray[i]) == null)
+            {
+                print("Details not yet input for this patient");
+            }
+            else
+            {
+                if (getHasDiabetes(pArray[i]))
+                {
+                    print("Has diabetes");
+                }
+                else
+                {
+                    print("Doesn't have diabetes");
+                }
+                print("Follows the regime of " + getRegime(pArray[i]));
+            }
 
+        }
+    }
     public static void choice2(Patient[] pArray, String name)
     {
         for (int i = 0; i < pArray.length; i++) {
             if (name.equals(pArray[i].name))
             {
                 pArray[i] = hasDiabetes(pArray[i]);
+                pArray[i] = inputRegime(pArray[i]);
             }
         }
         print("This person doesn't exist");
+    }
+
+    public static Patient inputRegime(Patient p)
+    {
+        int choice = inputInt("What do you follow?\n1. Diet\n2. Exercise\n3. Drugs");
+        choice = checkChoice(choice);
+
+        if (choice == 1)
+        {
+            p.regime = "Diet";
+        }
+        else if (choice == 2)
+        {
+            p.regime = "Exercise";
+        }
+        else
+        {
+            p.regime = "Drugs";
+        }
+        return p;
+    }
+    public static int checkChoice(int choice)
+    {
+        while (choice != 1 && choice != 2 && choice != 3)
+        {
+            choice = inputInt("Choose one of the three");
+        }
+        return choice;
     }
 
     public static Patient hasDiabetes(Patient p)
@@ -51,38 +141,31 @@ public class Main {
         }
         return p;
     }
-    public static int checkChoice(int choice)
+    public static void inputNamesArray1(String[] names, int MAX_PATIENTS)
     {
-        while (choice != 1 && choice != 2 && choice != 3)
-        {
-            choice = inputInt("Choose one of the three");
-        }
-        return choice;
-    }
-
-    public static void inputSurnames(Patient[] pArray, int max)
-    {
-        String sName = inputString("What is the surname?");
-
         int i = 0;
-        while (i < max && !sName.equals("XXX"))
-        {
-           pArray[i] = inputPatient(sName);
-            i++;
-            sName = inputString("What is the surname?");
-        }
-        print("Thank you;");
+        String name = inputString("What is the surname of active patients?");
 
+        while (!name.equals("XXX") && i < MAX_PATIENTS)
+        {
+            names[i] = name;
+            i++;
+
+            name = inputString("What is the surname of active patients?");
+        }
+        print("Thank you");
     }
 
-    public static Patient inputPatient(String sName)
+    public static Patient createPatient()
     {
         Patient p = new Patient();
-        p.name = sName;
+        p.name = null;
         p.hasDiabetes = false;
-        p.improvementRegime = null;
+        p.regime = null;
+
         return p;
     }
+
 
     public static void print(String m)
     {
@@ -114,14 +197,19 @@ public class Main {
         return p.name;
     }
 
-    public static String getImprovementRegime(Patient p)
+    public static boolean getHasDiabetes(Patient p)
     {
-        return p.improvementRegime;
+        return p.hasDiabetes;
+    }
+
+    public static String getRegime(Patient p)
+    {
+        return p.regime;
     }
 }
 
 class Patient{
     String name;
     boolean hasDiabetes;
-    String improvementRegime;
+    String regime;
 }
